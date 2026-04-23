@@ -6,4 +6,6 @@
     <string name="title_notifications">Notifications</string>
     <string name="title_activity_splash">SplashActivity</string>
     <string name="title_activity_main2">MainActivity2</string>
+    <string name="title_activity_add_update_dish">AddUpdateDishActivity</string>
+    <string name="add_dish">Add Dish</string>
 </resources>

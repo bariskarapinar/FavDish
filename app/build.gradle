@@ -1,15 +1,16 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'org.jetbrains.kotlin.plugin.compose'
 }
 
 android {
-    namespace 'com.tutorials.eu.favdish'
+    namespace 'com.myapp.favdish'
     compileSdkVersion 33
     buildToolsVersion "33.0.0"
 
     defaultConfig {
-        applicationId "com.tutorials.eu.favdish"
+        applicationId "com.myapp.favdish"
         minSdkVersion 23
         targetSdkVersion 33
         versionCode 1
