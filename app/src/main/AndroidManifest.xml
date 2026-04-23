@@ -12,7 +12,8 @@
         <activity
             android:name=".view.activities.AddUpdateDishActivity"
             android:label="Add Dish"
-            android:theme="@style/Theme.FavDish.NoActionbar" />
+            android:theme="@style/Theme.FavDish.NoActionbar"
+            android:configChanges="orientation"/>
         <activity
             android:name=".view.activities.SplashActivity"
             android:exported="true"
