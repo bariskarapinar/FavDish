@@ -15,7 +15,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.myapp.favdish.R
 import com.myapp.favdish.view.activities.AddUpdateDishActivity
 import com.myapp.favdish.viewmodel.HomeViewModel
-import kotlin.jvm.java
 
 class AllDishesFragment : Fragment() {
 

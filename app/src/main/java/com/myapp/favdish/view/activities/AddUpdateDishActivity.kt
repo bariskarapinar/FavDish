@@ -14,6 +14,7 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.annotation.Nullable
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AlertDialog
@@ -35,11 +36,15 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.karumi.dexter.listener.single.PermissionListener
 import com.myapp.favdish.R
+import com.myapp.favdish.application.FavDishApplication
 import com.myapp.favdish.databinding.ActivityAddUpdateDishBinding
 import com.myapp.favdish.databinding.DialogCustomImageSelectionBinding
 import com.myapp.favdish.databinding.DialogCustomListBinding
+import com.myapp.favdish.model.entities.FavDish
 import com.myapp.favdish.utils.Constants
 import com.myapp.favdish.view.adapters.CustomListItemAdapter
+import com.myapp.favdish.viewmodel.FavDishViewModel
+import com.myapp.favdish.viewmodel.FavDishViewModelFactory
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -51,6 +56,10 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var mBinding: ActivityAddUpdateDishBinding
     private var mImagePath: String = ""
     private lateinit var mCustomListDialog: Dialog
+
+    private val mFavDishViewModel: FavDishViewModel by viewModels {
+        FavDishViewModelFactory((application as FavDishApplication).repository)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -171,11 +180,29 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
                             ).show()
                         }
                         else -> {
+                            val favDishDetails = FavDish(
+                                mImagePath,
+                                Constants.DISH_IMAGE_SOURCE_LOCAL,
+                                title,
+                                type,
+                                category,
+                                ingredients,
+                                cookingTimeInMinutes,
+                                cookingDirection,
+                                false
+                            )
+
+                            mFavDishViewModel.insert(favDishDetails)
+
                             Toast.makeText(
                                 this@AddUpdateDishActivity,
-                                "All the entries are valid.",
+                                "You successfully added your favorite dish details.",
                                 Toast.LENGTH_SHORT
                             ).show()
+
+                            Log.i("Insertion", "Success")
+
+                            finish()
                         }
                     }
                 }
@@ -277,9 +304,9 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .listener(object : RequestListener<Drawable> {
                             override fun onLoadFailed(
-                                @Nullable e: GlideException?,
+                                e: GlideException?,
                                 model: Any?,
-                                target: Target<Drawable>?,
+                                target: Target<Drawable>,
                                 isFirstResource: Boolean
                             ): Boolean {
                                 Log.e("TAG", "Error loading image", e)
@@ -288,9 +315,9 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
 
                             override fun onResourceReady(
                                 resource: Drawable,
-                                model: Any?,
+                                model: Any,
                                 target: Target<Drawable>?,
-                                dataSource: DataSource?,
+                                dataSource: DataSource,
                                 isFirstResource: Boolean
                             ): Boolean {
                                 val bitmap: Bitmap = resource.toBitmap()
