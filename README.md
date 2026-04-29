@@ -1,8 +1,4 @@
-<h1 align="center">🍲 FavDish: A High-Performance Recipe Ecosystem Built with Modern Android Engineering 🚀</h1>
-
-<p align="center">
-  <img src="app/src/main/res/drawable/ic_vector_logo.xml" width="250" height="250" alt="FavDish Logo">
-</p>
+<h1 align="center">🍲 FavoriteDish: A High-Performance Recipe Ecosystem Built with Modern Android Engineering 🚀</h1>
 
 <p align="center">
   <a href="https://kotlinlang.org/"><img src="https://img.shields.io/badge/Kotlin-2.1.0-blueviolet?style=for-the-badge&logo=kotlin" alt="Kotlin"></a>
