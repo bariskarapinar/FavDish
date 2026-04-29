@@ -1,8 +1,5 @@
 package com.myapp.favdish.utils
 
-/**
- * This is used to define the constant values that we can use throughout the application.
- */
 object Constants {
 
     const val DISH_TYPE: String = "DishType"
@@ -12,9 +9,30 @@ object Constants {
     const val DISH_IMAGE_SOURCE_LOCAL: String = "Local"
     const val DISH_IMAGE_SOURCE_ONLINE: String = "Online"
 
-    /**
-     * This function will return the Dish Type List items.
-     */
+    const val EXTRA_DISH_DETAILS: String = "DishDetails"
+
+    const val ALL_ITEMS: String = "All"
+    const val FILTER_SELECTION: String = "FilterSelection"
+
+    const val BASE_URL = "https://api.spoonacular.com/"
+
+    const val API_ENDPOINT: String = "recipes/random"
+
+    const val API_KEY_VALUE: String = "433b42674ee94a64ad420e101000eb79"
+
+    const val API_KEY: String = "apiKey"
+    const val LIMIT_LICENSE: String = "limitLicense"
+    const val TAGS: String = "tags"
+    const val NUMBER: String = "number"
+
+    const val LIMIT_LICENSE_VALUE: Boolean = true
+    const val TAGS_VALUE: String = "vegetarian, dessert"
+    const val NUMBER_VALUE: Int = 1
+
+    const val NOTIFICATION_ID = "FavDish_notification_id"
+    const val NOTIFICATION_NAME = "FavDish"
+    const val NOTIFICATION_CHANNEL = "FavDish_channel_01"
+
     fun dishTypes(): ArrayList<String> {
         val list = ArrayList<String>()
         list.add("breakfast")
@@ -28,9 +46,6 @@ object Constants {
         return list
     }
 
-    /**
-     *  This function will return the Dish Category list items.
-     */
     fun dishCategories(): ArrayList<String> {
         val list = ArrayList<String>()
         list.add("Pizza")
@@ -50,9 +65,6 @@ object Constants {
         return list
     }
 
-    /**
-     *  This function will return the Dish Cooking Time list items. The time added is in Minutes.
-     */
     fun dishCookTime(): ArrayList<String> {
         val list = ArrayList<String>()
         list.add("10")

@@ -14,8 +14,8 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.annotation.Nullable
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -56,6 +56,77 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var mBinding: ActivityAddUpdateDishBinding
     private var mImagePath: String = ""
     private lateinit var mCustomListDialog: Dialog
+    private var mFavDishDetails: FavDish? = null
+
+    private val mGalleryResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                result.data?.let { data ->
+                    val selectedImage = data.data
+
+                    Glide.with(this)
+                        .load(selectedImage)
+                        .centerCrop()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .listener(object : RequestListener<Drawable> {
+                            override fun onLoadFailed(
+                                e: GlideException?,
+                                model: Any?,
+                                target: Target<Drawable>,
+                                isFirstResource: Boolean
+                            ): Boolean {
+                                Log.e("TAG", "Error loading image", e)
+                                return false
+                            }
+
+                            override fun onResourceReady(
+                                resource: Drawable,
+                                model: Any,
+                                target: Target<Drawable>?,
+                                dataSource: DataSource,
+                                isFirstResource: Boolean
+                            ): Boolean {
+                                val bitmap: Bitmap = resource.toBitmap()
+                                mImagePath = saveImageToInternalStorage(bitmap)
+                                Log.i("ImagePath", mImagePath)
+                                return false
+                            }
+                        })
+                        .into(mBinding.ivDishImage)
+
+                    mBinding.ivAddDishImage.setImageDrawable(
+                        ContextCompat.getDrawable(
+                            this,
+                            R.drawable.ic_vector_edit
+                        )
+                    )
+                }
+            }
+        }
+
+    private val mCameraResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                result.data?.let { data ->
+                    val thumbNail: Bitmap = data.extras!!.get("data") as Bitmap
+
+                    Glide.with(this)
+                        .load(thumbNail)
+                        .centerCrop()
+                        .into(mBinding.ivDishImage)
+
+                    mImagePath = saveImageToInternalStorage(thumbNail)
+                    Log.i("ImagePath", mImagePath)
+
+                    mBinding.ivAddDishImage.setImageDrawable(
+                        ContextCompat.getDrawable(
+                            this,
+                            R.drawable.ic_vector_edit
+                        )
+                    )
+                }
+            }
+        }
 
     private val mFavDishViewModel: FavDishViewModel by viewModels {
         FavDishViewModelFactory((application as FavDishApplication).repository)
@@ -66,23 +137,53 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
         mBinding = ActivityAddUpdateDishBinding.inflate(layoutInflater)
         setContentView(mBinding.root)
 
-        setupActionBar()
-        mBinding.ivAddDishImage.setOnClickListener(this)
+        if (intent.hasExtra(Constants.EXTRA_DISH_DETAILS)) {
+            mFavDishDetails = intent.getParcelableExtra(Constants.EXTRA_DISH_DETAILS)
+        }
 
+        setupActionBar()
+
+        mFavDishDetails?.let {
+            if (it.id != 0) {
+                mImagePath = it.image
+                Glide.with(this@AddUpdateDishActivity)
+                    .load(mImagePath)
+                    .centerCrop()
+                    .into(mBinding.ivDishImage)
+
+                mBinding.etTitle.setText(it.title)
+                mBinding.etType.setText(it.type)
+                mBinding.etCategory.setText(it.category)
+                mBinding.etIngredients.setText(it.ingredients)
+                mBinding.etCookingTime.setText(it.cookingTime)
+                mBinding.etDirectionToCook.setText(it.directionToCook)
+
+                mBinding.btnAddDish.text = resources.getString(R.string.lbl_update_dish)
+            }
+        }
+
+        mBinding.ivAddDishImage.setOnClickListener(this)
         mBinding.etType.setOnClickListener(this)
         mBinding.etCategory.setOnClickListener(this)
         mBinding.etCookingTime.setOnClickListener(this)
-        
         mBinding.btnAddDish.setOnClickListener(this)
-
     }
 
     private fun setupActionBar() {
         setSupportActionBar(mBinding.toolbarAddDishActivity)
+        if (mFavDishDetails != null && mFavDishDetails!!.id != 0) {
+            supportActionBar?.let {
+                it.title = resources.getString(R.string.title_edit_dish)
+            }
+        } else {
+            supportActionBar?.let {
+                it.title = resources.getString(R.string.title_add_dish)
+            }
+        }
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_arrow_back)
         mBinding.toolbarAddDishActivity.setNavigationOnClickListener {
-            onBackPressed()
+            onBackPressedDispatcher.onBackPressed()
         }
     }
 
@@ -126,82 +227,60 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
                     val cookingDirection = mBinding.etDirectionToCook.text.toString().trim { it <= ' ' }
 
                     when {
-
                         TextUtils.isEmpty(mImagePath) -> {
-                            Toast.makeText(
-                                this@AddUpdateDishActivity,
-                                resources.getString(R.string.err_msg_select_dish_image),
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(this@AddUpdateDishActivity, resources.getString(R.string.err_msg_select_dish_image), Toast.LENGTH_SHORT).show()
                         }
-
                         TextUtils.isEmpty(title) -> {
-                            Toast.makeText(
-                                this@AddUpdateDishActivity,
-                                resources.getString(R.string.err_msg_enter_dish_title),
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(this@AddUpdateDishActivity, resources.getString(R.string.err_msg_enter_dish_title), Toast.LENGTH_SHORT).show()
                         }
-
                         TextUtils.isEmpty(type) -> {
-                            Toast.makeText(
-                                this@AddUpdateDishActivity,
-                                resources.getString(R.string.err_msg_select_dish_type),
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(this@AddUpdateDishActivity, resources.getString(R.string.err_msg_select_dish_type), Toast.LENGTH_SHORT).show()
                         }
-
                         TextUtils.isEmpty(category) -> {
-                            Toast.makeText(
-                                this@AddUpdateDishActivity,
-                                resources.getString(R.string.err_msg_select_dish_category),
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(this@AddUpdateDishActivity, resources.getString(R.string.err_msg_select_dish_category), Toast.LENGTH_SHORT).show()
                         }
                         TextUtils.isEmpty(ingredients) -> {
-                            Toast.makeText(
-                                this@AddUpdateDishActivity,
-                                resources.getString(R.string.err_msg_enter_dish_ingredients),
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(this@AddUpdateDishActivity, resources.getString(R.string.err_msg_enter_dish_ingredients), Toast.LENGTH_SHORT).show()
                         }
                         TextUtils.isEmpty(cookingTimeInMinutes) -> {
-                            Toast.makeText(
-                                this@AddUpdateDishActivity,
-                                resources.getString(R.string.err_msg_select_dish_cooking_time),
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(this@AddUpdateDishActivity, resources.getString(R.string.err_msg_select_dish_cooking_time), Toast.LENGTH_SHORT).show()
                         }
                         TextUtils.isEmpty(cookingDirection) -> {
-                            Toast.makeText(
-                                this@AddUpdateDishActivity,
-                                resources.getString(R.string.err_msg_enter_dish_cooking_instructions),
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(this@AddUpdateDishActivity, resources.getString(R.string.err_msg_enter_dish_cooking_instructions), Toast.LENGTH_SHORT).show()
                         }
                         else -> {
+                            var dishID = 0
+                            var imageSource = Constants.DISH_IMAGE_SOURCE_LOCAL
+                            var favoriteDish = false
+
+                            mFavDishDetails?.let {
+                                if (it.id != 0) {
+                                    dishID = it.id
+                                    imageSource = it.imageSource
+                                    favoriteDish = it.favoriteDish
+                                }
+                            }
+
                             val favDishDetails = FavDish(
                                 mImagePath,
-                                Constants.DISH_IMAGE_SOURCE_LOCAL,
+                                imageSource,
                                 title,
                                 type,
                                 category,
                                 ingredients,
                                 cookingTimeInMinutes,
                                 cookingDirection,
-                                false
+                                favoriteDish,
+                                dishID
                             )
 
-                            mFavDishViewModel.insert(favDishDetails)
-
-                            Toast.makeText(
-                                this@AddUpdateDishActivity,
-                                "You successfully added your favorite dish details.",
-                                Toast.LENGTH_SHORT
-                            ).show()
-
-                            Log.i("Insertion", "Success")
-
+                            if (dishID == 0) {
+                                mFavDishViewModel.insert(favDishDetails)
+                                Toast.makeText(this@AddUpdateDishActivity, "You successfully added your favorite dish details.", Toast.LENGTH_SHORT).show()
+                            } else {
+                                mFavDishViewModel.update(favDishDetails)
+                                Toast.makeText(this@AddUpdateDishActivity, "You successfully updated your favorite dish details.", Toast.LENGTH_SHORT).show()
+                            }
                             finish()
                         }
                     }
@@ -217,7 +296,6 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
         dialog.setContentView(binding.root)
 
         binding.tvCamera.setOnClickListener {
-
             Dexter.withContext(this).withPermissions(
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.CAMERA
@@ -227,48 +305,35 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
                         report?.let {
                             if (report.areAllPermissionsGranted()) {
                                 val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                                startActivityForResult(intent, CAMERA)
-
+                                mCameraResultLauncher.launch(intent)
                             }
                         }
                     }
-
                     override fun onPermissionRationaleShouldBeShown(
                         permissions: MutableList<PermissionRequest>?,
                         token: PermissionToken?
                     ) {
                         showRationalDialogForPermissions()
                     }
-
                 }
             ).onSameThread().check()
-
             dialog.dismiss()
         }
         binding.tvGallery.setOnClickListener {
             Dexter.withContext(this@AddUpdateDishActivity)
-                .withPermission(
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-                )
+                .withPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
                 .withListener(object : PermissionListener {
                     override fun onPermissionGranted(p0: PermissionGrantedResponse?) {
-                        val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-                        startActivityForResult(galleryIntent, GALLERY)
+                        val galleryIntent =
+                            Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                        mGalleryResultLauncher.launch(galleryIntent)
                     }
-
                     override fun onPermissionDenied(p0: PermissionDeniedResponse?) {
-                        Toast.makeText(this@AddUpdateDishActivity,
-                            "You have denied storage permission",
-                            Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@AddUpdateDishActivity, "You have denied storage permission", Toast.LENGTH_SHORT).show()
                     }
-
-                    override fun onPermissionRationaleShouldBeShown(
-                        p0: PermissionRequest?,
-                        p1: PermissionToken?
-                    ) {
+                    override fun onPermissionRationaleShouldBeShown(p0: PermissionRequest?, p1: PermissionToken?) {
                         showRationalDialogForPermissions()
                     }
-
                 }).onSameThread()
                 .check()
             dialog.dismiss()
@@ -276,72 +341,14 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
         dialog.show()
     }
 
-     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == CAMERA) {
-                data?.let {
-                    val thumbNail : Bitmap = data.extras!!.get("data") as Bitmap
-                    
-                    Glide.with(this)
-                        .load(thumbNail)
-                        .centerCrop()
-                        .into(mBinding.ivDishImage)
-
-                    mImagePath = saveImageToInternalStorage(thumbNail)
-                    Log.i("ImagePath", mImagePath)
-
-                    mBinding.ivAddDishImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_vector_edit))
-                }
-            }
-            else if (requestCode == GALLERY) {
-                data?.let {
-                    val selectedImage = data.data
-                    
-                    Glide.with(this)
-                        .load(selectedImage)
-                        .centerCrop()
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .listener(object : RequestListener<Drawable> {
-                            override fun onLoadFailed(
-                                e: GlideException?,
-                                model: Any?,
-                                target: Target<Drawable>,
-                                isFirstResource: Boolean
-                            ): Boolean {
-                                Log.e("TAG", "Error loading image", e)
-                                return false
-                            }
-
-                            override fun onResourceReady(
-                                resource: Drawable,
-                                model: Any,
-                                target: Target<Drawable>?,
-                                dataSource: DataSource,
-                                isFirstResource: Boolean
-                            ): Boolean {
-                                val bitmap: Bitmap = resource.toBitmap()
-                                mImagePath = saveImageToInternalStorage(bitmap)
-                                Log.i("ImagePath", mImagePath)
-                                return false
-                            }
-                        })
-                        .into(mBinding.ivDishImage)
-
-                    mBinding.ivAddDishImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_vector_edit))
-                }
-            }
-        } else if (resultCode == Activity.RESULT_CANCELED) {
-            Log.e("Request Cancelled", "Image selection cancelled")
-        }
-    }
-
     private fun showRationalDialogForPermissions() {
-        AlertDialog.Builder(this).setMessage("It looks like you have turned off permissions required for this feature")
+        AlertDialog.Builder(this)
+            .setMessage("It looks like you have turned off permissions required for this feature")
             .setPositiveButton("GO TO SETTINGS")
-            {_, _ ->
+            { _, _ ->
                 try {
-                    val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                    val intent =
+                        Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                     val uri = android.net.Uri.fromParts("package", packageName, null)
                     intent.data = uri
                     startActivity(intent)
@@ -375,7 +382,7 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
         mCustomListDialog.setContentView(binding.root)
         binding.tvTitle.text = title
         binding.rvList.layoutManager = LinearLayoutManager(this)
-        val adapter = CustomListItemAdapter(this, itemsList, selection)
+        val adapter = CustomListItemAdapter(this, null, itemsList, selection)
         binding.rvList.adapter = adapter
         mCustomListDialog.show()
     }
@@ -398,8 +405,6 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     companion object {
-        private const val CAMERA = 1
-        private const val GALLERY = 2
         private const val IMAGE_DIRECTORY = "FavDishImages"
     }
 }

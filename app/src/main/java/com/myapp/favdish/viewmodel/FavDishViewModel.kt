@@ -1,31 +1,34 @@
 package com.myapp.favdish.viewmodel
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.myapp.favdish.model.database.FavDishRepository
 import com.myapp.favdish.model.entities.FavDish
 import kotlinx.coroutines.launch
 
-/**
- * The ViewModel data is retained through configuration changes (such as when the user rotates the screen).
- *
- * @param repository - The repository that we will use to get the data from the database.
- */
 class FavDishViewModel(private val repository: FavDishRepository) : ViewModel() {
 
-    /**
-     * Launching a new coroutine to insert the data in a non-blocking way.
-     */
     fun insert(dish: FavDish) = viewModelScope.launch {
         repository.insertFavDishData(dish)
     }
+
+    val allDishesList: LiveData<List<FavDish>> = repository.allDishesList.asLiveData()
+
+    fun update(dish: FavDish) = viewModelScope.launch {
+        repository.updateFavDishData(dish)
+    }
+
+    val favoriteDishes: LiveData<List<FavDish>> = repository.favoriteDishes.asLiveData()
+
+    fun delete(dish: FavDish) = viewModelScope.launch {
+        repository.deleteFavDishData(dish)
+    }
+
+    fun getFilteredList(value: String): LiveData<List<FavDish>> =
+        repository.filteredListDishes(value).asLiveData()
 }
 
-/**
- * To create the ViewModel we need a factory that can pass the repository as a parameter.
- */
-class FavDishViewModelFactory(private val repository: FavDishRepository) : ViewModelProvider.Factory {
+class FavDishViewModelFactory(private val repository: FavDishRepository) :
+    ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(FavDishViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
