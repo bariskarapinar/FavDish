@@ -70,8 +70,6 @@ The project was engineered to showcase mastery over the entire Android lifecycle
   <img src="https://github.com/user-attachments/assets/d9b163c1-a2e3-4d0c-ae4e-0e28fe27c833" width="24%">
   <img src="https://github.com/user-attachments/assets/a2b61ef0-dd70-4e38-9870-4f8055cc7fa7" width="24%">
 </p>
----
-
 
 ---
 
