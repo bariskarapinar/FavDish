@@ -1,8 +1,4 @@
-<h1 align="center">🍲 FavDish: A High-Performance Recipe Ecosystem Built with Modern Android Engineering 🚀</h1>
-
-<p align="center">
-  <img src="app/src/main/res/drawable/ic_vector_logo.xml" width="250" height="250" alt="FavDish Logo">
-</p>
+<h1 align="center">🍲 FavoriteDish: A High-Performance Recipe Ecosystem Built with Modern Android Engineering 🚀</h1>
 
 <p align="center">
   <a href="https://kotlinlang.org/"><img src="https://img.shields.io/badge/Kotlin-2.1.0-blueviolet?style=for-the-badge&logo=kotlin" alt="Kotlin"></a>
@@ -34,6 +30,46 @@
 **FavDish** is not just an app; it is a comprehensive technical demonstration of **Modern Android Development (MAD)**. Built as a high-tier personal education project, it solves the "What should I cook today?" problem by blending local recipe management with global API-driven discovery. 
 
 The project was engineered to showcase mastery over the entire Android lifecycle, from complex UI animations and dynamic color processing to robust background task scheduling and reactive data streams.
+
+---
+
+## 📸 Visual Showcase
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/33f015fa-fac9-4cfd-bfb4-de2a6466b90b" width="24%">
+  <img src="https://github.com/user-attachments/assets/d9e154e4-8d1d-4d69-ba16-097e44f7310a" width="24%">
+  <img src="https://github.com/user-attachments/assets/4cb20d78-b9d3-4b7c-8c97-7f15845d1226" width="24%">
+</p>
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/9ed14528-e595-41e9-bc84-1a5aa2a962b4" width="24%">
+  <img src="https://github.com/user-attachments/assets/f43b8655-e0a4-478f-8ced-9794df76b07c" width="24%">
+  <img src="https://github.com/user-attachments/assets/767153b5-aade-4507-800e-4df0e179c666" width="24%">
+</p>
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/121e210d-aad7-4765-9dcc-c05e4d4c9091" width="24%">
+  <img src="https://github.com/user-attachments/assets/a225e5cb-9514-444a-8797-7a2ab47bb461" width="24%">
+  <img src="https://github.com/user-attachments/assets/8af215e7-6f73-46cd-b44d-9e549b8e2b53" width="24%">
+</p>
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/f880bb28-16ef-4719-8b69-2306b1519630" width="24%">
+  <img src="https://github.com/user-attachments/assets/556aa70f-9ef6-49fa-8e2f-59e76361176c" width="24%">
+  <img src="https://github.com/user-attachments/assets/883b14d5-683e-4920-999f-2dd3252ee977" width="24%">
+</p>
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/97a06f48-f712-49c2-a2f7-17362801a8b4" width="24%">
+  <img src="https://github.com/user-attachments/assets/f2feda11-74ac-4c8a-bb8f-1adc573b3ff9" width="24%">
+  <img src="https://github.com/user-attachments/assets/d7bfc5a3-51a4-4395-944a-f21ff4b4b1aa" width="24%">
+</p>
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/43f668a2-8deb-41ad-98f9-a1b6d295dfea" width="24%">
+  <img src="https://github.com/user-attachments/assets/18e4e3ba-d0b7-4f32-9375-1fe48bd901c8" width="24%">
+  <img src="https://github.com/user-attachments/assets/f9e81a56-0fd0-4e94-837f-5c658e8c1b53" width="24%">
+</p>
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/c38f06ba-461c-4ef0-be8d-4941b1295476" width="24%">
+  <img src="https://github.com/user-attachments/assets/d9b163c1-a2e3-4d0c-ae4e-0e28fe27c833" width="24%">
+  <img src="https://github.com/user-attachments/assets/a2b61ef0-dd70-4e38-9870-4f8055cc7fa7" width="24%">
+</p>
 
 ---
 
@@ -173,22 +209,6 @@ Palette.from(bitmap).generate { palette ->
     mBinding.rlDishDetailMain.setBackgroundColor(intColor)
 }
 ```
-
----
-
-## 📸 Visual Showcase
-
-> **Note:** Replace these placeholders with your actual exported screenshots.
-
-### **User Experience Journey**
-| Splash & Entry | All Dishes Grid | Filter Interface |
-| :---: | :---: | :---: |
-| <img src="screenshots/splash.png" width="200" /> | <img src="screenshots/home.png" width="200" /> | <img src="screenshots/filter.png" width="200" /> |
-
-### **Feature Highlights**
-| Add New Recipe | Dynamic Details | Random Discovery |
-| :---: | :---: | :---: |
-| <img src="screenshots/add_dish.png" width="200" /> | <img src="screenshots/details.png" width="200" /> | <img src="screenshots/random.png" width="200" /> |
 
 ---
 
